@@ -7,14 +7,12 @@ pipelines:
   branches:
     master:
       - step:
-          name: Run Unit Tests
-          caches:
-            - docker
-          script:
-            - apk add --no-cache bash curl # Instalar dependências, se necessário
-            - dotnet restore
-            - dotnet build
-            - dotnet test --no-restore --verbosity normal # Executa os testes unitários
+        name: Test
+        image: mcr.microsoft.com/dotnet/sdk:9.0
+        caches:
+          - dotnetcore
+        script:
+          - dotnet test --configuration Release
 
       - step:
           name: Build, Version, and Push Docker Image
