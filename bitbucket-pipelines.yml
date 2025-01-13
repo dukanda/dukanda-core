@@ -7,6 +7,16 @@ pipelines:
   branches:
     master:
       - step:
+          name: Run Unit Tests
+          caches:
+            - docker
+          script:
+            - apk add --no-cache bash curl # Instalar dependências, se necessário
+            - dotnet restore
+            - dotnet build
+            - dotnet test --no-restore --verbosity normal # Executa os testes unitários
+
+      - step:
           name: Build, Version, and Push Docker Image
           caches:
             - docker
@@ -16,12 +26,12 @@ pipelines:
 
             # Ler e incrementar o minor version
             - VERSION=$(cat VERSION)
-            - echo "Versão atual: $VERSION"
+            - echo "Versão atual"
             - MAJOR=$(echo $VERSION | cut -d. -f1)
             - MINOR=$(echo $VERSION | cut -d. -f2)
             - NEW_MINOR=$((MINOR + 1))
             - NEW_VERSION="$MAJOR.$NEW_MINOR"
-            - echo "Nova versão: $NEW_VERSION"
+            - echo "Nova versão"
             - echo $NEW_VERSION > VERSION
 
             # Commit da nova versão no arquivo VERSION
