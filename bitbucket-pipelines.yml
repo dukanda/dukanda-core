@@ -1,0 +1,42 @@
+image: docker:24.0.1
+
+options:
+  docker: true
+
+pipelines:
+  branches:
+    main:
+      - step:
+          name: Build, Version, and Push Docker Image
+          caches:
+            - docker
+          script:
+            # Login no Docker Hub
+            - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
+            # Ler e incrementar o minor version
+            - VERSION=$(cat VERSION)
+            - echo "Versão atual: $VERSION"
+            - MAJOR=$(echo $VERSION | cut -d. -f1)
+            - MINOR=$(echo $VERSION | cut -d. -f2)
+            - NEW_MINOR=$((MINOR + 1))
+            - NEW_VERSION="$MAJOR.$NEW_MINOR"
+            - echo "Nova versão: $NEW_VERSION"
+            - echo $NEW_VERSION > VERSION
+
+            # Commit da nova versão no arquivo VERSION
+            - git config --global user.email "ci-cd@dukanda.com"
+            - git config --global user.name "Dukanda CI/CD"
+            - git add VERSION
+            - git commit -m "Incrementa para versão $NEW_VERSION [CI/CD]"
+            - git push
+
+            # Definir nome da imagem
+            - IMAGE_NAME=dukanda-core-api
+            - FULL_IMAGE_NAME=$DOCKER_USERNAME/$IMAGE_NAME:$NEW_VERSION
+
+            # Construir imagem Docker
+            - docker build -t $FULL_IMAGE_NAME -f src/Web/Dockerfile .
+
+            # Enviar imagem para o Docker Hub
+            - docker push $FULL_IMAGE_NAME
