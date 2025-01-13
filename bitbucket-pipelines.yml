@@ -5,7 +5,7 @@ options:
 
 pipelines:
   branches:
-    main:
+    master:
       - step:
           name: Build, Version, and Push Docker Image
           caches:
