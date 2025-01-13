@@ -6,15 +6,15 @@ options:
 pipelines:
   branches:
     master:
-      - step:
-        name: Test
-        image: mcr.microsoft.com/dotnet/sdk:9.0
+     - step:
+        name: Test, Testing
+        image: mcr.microsoft.com/dotnet/sdk:8.0
         caches:
           - dotnetcore
         script:
           - dotnet test --configuration Release
 
-      - step:
+     - step:
           name: Build, Version, and Push Docker Image
           caches:
             - docker
