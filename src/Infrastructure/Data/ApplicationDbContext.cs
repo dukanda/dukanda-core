@@ -1,13 +1,14 @@
 ﻿using System.Reflection;
 using DukandaCore.Application.Common.Interfaces;
 using DukandaCore.Domain.Entities;
+using DukandaCore.Domain.Identity;
 using DukandaCore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DukandaCore.Infrastructure.Data;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser>, IApplicationDbContext
+public class ApplicationDbContext : IdentityDbContext<User>, IApplicationDbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 

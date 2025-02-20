@@ -1,4 +1,5 @@
 ﻿using DukandaCore.Domain.Constants;
+using DukandaCore.Domain.Identity;
 using DukandaCore.Infrastructure.Data;
 using DukandaCore.Infrastructure.Identity;
 using MediatR;
@@ -63,9 +64,9 @@ public partial class Testing
     {
         using var scope = _scopeFactory.CreateScope();
 
-        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+        var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
 
-        var user = new ApplicationUser { UserName = userName, Email = userName };
+        var user = new User { UserName = userName, Email = userName };
 
         var result = await userManager.CreateAsync(user, password);
 

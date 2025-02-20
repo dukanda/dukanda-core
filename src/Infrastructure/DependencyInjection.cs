@@ -1,5 +1,6 @@
 ﻿using DukandaCore.Application.Common.Interfaces;
 using DukandaCore.Domain.Constants;
+using DukandaCore.Domain.Identity;
 using DukandaCore.Infrastructure.Data;
 using DukandaCore.Infrastructure.Data.Interceptors;
 using DukandaCore.Infrastructure.Identity;
@@ -24,7 +25,7 @@ public static class DependencyInjection
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-            options.UseSqlServer(connectionString);
+            options.UseNpgsql(connectionString);
         });
 
 
@@ -33,7 +34,7 @@ public static class DependencyInjection
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
         builder.Services
-            .AddDefaultIdentity<ApplicationUser>()
+            .AddDefaultIdentity<User>()
             .AddRoles<IdentityRole>()
             .AddEntityFrameworkStores<ApplicationDbContext>();
 
