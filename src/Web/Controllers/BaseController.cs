@@ -1,6 +1,10 @@
+using Microsoft.AspNetCore.Mvc;
+
 namespace Microsoft.Extensions.DependencyInjection.Controllers;
 
-public class BaseController
+[ApiController]
+[Route("api/[controller]")]
+public class BaseController: ControllerBase
 {
     
 }

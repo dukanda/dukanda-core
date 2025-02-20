@@ -18,8 +18,13 @@ if (app.Environment.IsDevelopment())
     {
         Console.WriteLine("Migrating database ...");
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-        await db.Database.MigrateAsync();
+        var pendingMigrations = db.Database.GetPendingMigrations();
+        if (pendingMigrations.Any())
+        {
+            await db.Database.MigrateAsync();
+        }
     }
+
     await app.InitialiseDatabaseAsync();
 }
 else
@@ -29,17 +34,23 @@ else
 }
 
 app.UseHealthChecks("/health");
+app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.Map("/", () => Results.Redirect("/swagger"));
+app.UseSwagger();
+app.UseSwaggerUI();
 
 
-app.MapRazorPages();
 
 app.UseExceptionHandler(options => { });
 
 
-app.MapEndpoints();
-
 app.Run();
 
-public partial class Program { }
+public partial class Program
+{
+}
