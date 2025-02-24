@@ -1,5 +1,4 @@
 ﻿using System.Security.Claims;
-
 using DukandaCore.Application.Common.Interfaces;
 
 namespace DukandaCore.Web.Services;
@@ -13,5 +12,8 @@ public class CurrentUser : IUser
         _httpContextAccessor = httpContextAccessor;
     }
 
-    public string? Id => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+    public Guid? Id =>
+        !string.IsNullOrEmpty(_httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier))
+            ? Guid.Parse(_httpContextAccessor.HttpContext!.User.FindFirstValue(ClaimTypes.NameIdentifier)!)
+        : null;
 }

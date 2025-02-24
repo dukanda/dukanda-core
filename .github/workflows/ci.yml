@@ -22,8 +22,8 @@ jobs:
           file: ./src/Web/Dockerfile
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/dukanda:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/dukanda:${{ github.sha }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/dukanda-core:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/dukanda-core:${{ github.sha }}
 
       - name: Deploy
         if: github.ref == 'refs/heads/main'

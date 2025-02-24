@@ -15,7 +15,7 @@ public partial class Testing
     private static ITestDatabase _database = null!;
     private static CustomWebApplicationFactory _factory = null!;
     private static IServiceScopeFactory _scopeFactory = null!;
-    private static string? _userId;
+    private static Guid? _userId;
 
     [OneTimeSetUp]
     public async Task RunBeforeAnyTests()
@@ -45,22 +45,22 @@ public partial class Testing
         await mediator.Send(request);
     }
 
-    public static string? GetUserId()
+    public static Guid? GetUserId()
     {
         return _userId;
     }
 
-    public static async Task<string> RunAsDefaultUserAsync()
+    public static async Task<Guid?> RunAsDefaultUserAsync()
     {
         return await RunAsUserAsync("test@local", "Testing1234!", Array.Empty<string>());
     }
 
-    public static async Task<string> RunAsAdministratorAsync()
+    public static async Task<Guid?> RunAsAdministratorAsync()
     {
         return await RunAsUserAsync("administrator@local", "Administrator1234!", new[] { Roles.Administrator });
     }
 
-    public static async Task<string> RunAsUserAsync(string userName, string password, string[] roles)
+    public static async Task<Guid?> RunAsUserAsync(string userName, string password, string[] roles)
     {
         using var scope = _scopeFactory.CreateScope();
 
@@ -89,7 +89,7 @@ public partial class Testing
             return _userId;
         }
 
-        var errors = string.Join(Environment.NewLine, result.ToApplicationResult().Errors);
+        var errors = string.Join(Environment.NewLine, result.ToApplicationResult().Error!.Message);
 
         throw new Exception($"Unable to create {userName}.{Environment.NewLine}{errors}");
     }
