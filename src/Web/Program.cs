@@ -1,4 +1,5 @@
 using DukandaCore.Infrastructure.Data;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,11 +17,12 @@ if (app.Environment.IsDevelopment())
 {
     using (var scope = app.Services.CreateScope())
     {
-        Console.WriteLine("Migrating database ...");
+       
         var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
         var pendingMigrations = db.Database.GetPendingMigrations();
         if (pendingMigrations.Any())
         {
+            Console.WriteLine("Migrating database ...");
             await db.Database.MigrateAsync();
         }
     }
@@ -44,7 +46,10 @@ app.Map("/", () => Results.Redirect("/swagger"));
 app.UseSwagger();
 app.UseSwaggerUI();
 
-
+app.UseHangfireDashboard("/jobs", new DashboardOptions
+{
+    Authorization = new[] { new AllowAllConnectionsFilter() }
+});
 
 app.UseExceptionHandler(options => { });
 

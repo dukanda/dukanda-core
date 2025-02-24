@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace Microsoft.Extensions.DependencyInjection.Controllers;
+namespace DukandaCore.Web.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class BaseController: ControllerBase
+public abstract class BaseController(ISender sender) : ControllerBase
 {
-    
+    protected readonly ISender _sender = sender;
 }

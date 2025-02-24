@@ -2,11 +2,12 @@
 
 public abstract class BaseAuditableEntity : BaseEntity
 {
+    public new Guid Id { get; set; } = Guid.NewGuid();
     public DateTimeOffset Created { get; set; }
 
-    public string? CreatedBy { get; set; }
+    public Guid? CreatedById { get; set; }
 
     public DateTimeOffset LastModified { get; set; }
 
-    public string? LastModifiedBy { get; set; }
+    public Guid? LastModifiedById { get; set; }
 }

@@ -3,7 +3,11 @@ using DukandaCore.Domain.Constants;
 using DukandaCore.Domain.Identity;
 using DukandaCore.Infrastructure.Data;
 using DukandaCore.Infrastructure.Data.Interceptors;
+using DukandaCore.Infrastructure.Email;
+using DukandaCore.Infrastructure.FileStorage;
 using DukandaCore.Infrastructure.Identity;
+using Hangfire;
+using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -29,17 +33,24 @@ public static class DependencyInjection
         });
 
 
-        builder.Services.AddScoped<IApplicationDbContext>(provider => provider.GetRequiredService<ApplicationDbContext>());
-
+        builder.Services.AddScoped<IApplicationDbContext>(provider =>
+            provider.GetRequiredService<ApplicationDbContext>());
         builder.Services.AddScoped<ApplicationDbContextInitialiser>();
 
-        builder.Services
-            .AddDefaultIdentity<User>()
-            .AddRoles<IdentityRole>()
-            .AddEntityFrameworkStores<ApplicationDbContext>();
+        builder.Services.AddHangfire(config => config
+            .SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+            .UseSimpleAssemblyNameTypeSerializer()
+            .UseRecommendedSerializerSettings()
+            .UseSQLiteStorage("hangfire.db"));
+
+        builder.Services.AddHangfireServer();
 
         builder.Services.AddSingleton(TimeProvider.System);
-        builder.Services.AddTransient<IIdentityService, IdentityService>();
+        builder.Services.AddTransient<IAuthService, AuthService>();
+        builder.Services.AddTransient<ITokenService, TokenService>();
+        builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
+        builder.Services.AddTransient<IEmailService, EmailService>();
+        builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
 
         builder.Services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));
