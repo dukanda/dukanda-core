@@ -36,6 +36,7 @@ public class GetToursQueryHandler : IRequestHandler<GetToursQuery, Result<Pagina
     public async Task<Result<PaginatedList<TourDto>>> Handle(GetToursQuery request, CancellationToken cancellationToken)
     {
         var query = _context.Tours
+            .Include(t=>t.City)
             .Include(t => t.TourTypes)
             .Include(t => t.Agency)
             .AsQueryable();
