@@ -1,5 +1,6 @@
 ﻿using DukandaCore.Application.Common.Interfaces;
 using DukandaCore.Domain.Identity;
+using DukandaCore.Infrastructure.Data.Seeders;
 using DukandaCore.Infrastructure.Identity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
@@ -20,9 +21,10 @@ public static class InitialiserExtensions
 public class ApplicationDbContextInitialiser
 {
     private readonly ApplicationDbContext _context;
-   private readonly IPasswordHasher _passwordHasher;
+    private readonly IPasswordHasher _passwordHasher;
 
-    public ApplicationDbContextInitialiser(ApplicationDbContext context, IPasswordHasher passwordHasher)
+    public ApplicationDbContextInitialiser(ApplicationDbContext context,
+        IPasswordHasher passwordHasher)
     {
         _context = context;
         _passwordHasher = passwordHasher;
@@ -30,6 +32,8 @@ public class ApplicationDbContextInitialiser
 
     public async Task InitialiseAsync()
     {
+        var tourSeeder = new TourSeeder(_context);
+        await tourSeeder.SeedToursAsync();
         await _context.Database.MigrateAsync();
         await SeedDefaultUserAsync();
     }
