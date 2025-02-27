@@ -18,7 +18,13 @@ namespace DukandaCore.Infrastructure.Data.Seeders
 
         public async Task SeedTouristAttractionsAsync(int numberOfAttractions = 100)
         {
-            // Ensure cities exist
+             // Check if TouristAttraction table is already populated
+              var existingAttractions = await _context.Set<TouristAttraction>().AnyAsync();
+    if (existingAttractions)
+    {
+        return; // Skip seeding if attractions already exist
+    }
+            // Ensure cities exists
             var cities = await _context.Set<City>().ToListAsync();
             if (!cities.Any())
             {

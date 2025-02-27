@@ -16,10 +16,16 @@ namespace DukandaCore.Infrastructure.Data.Seeders
             _context = context;
             _random = new Random();
         }
-
         public async Task SeedToursAsync(int numberOfTours = 2000)
         {
-            // Delete existing tours and related entities
+            // Check if Tours table is already populated
+            var existingTours = await _context.Set<Tour>().AnyAsync();
+            if (existingTours)
+            {
+                return; // Skip seeding if tours already exist
+            }
+
+            // Rest of the existing seeding logic remains the same
             await DeleteExistingToursAndDependencies();
 
             // Ensure we have prerequisite data
@@ -75,6 +81,7 @@ namespace DukandaCore.Infrastructure.Data.Seeders
             _context.Set<Tour>().AddRange(tours);
             await _context.SaveChangesAsync();
         }
+        
 
         private async Task DeleteExistingToursAndDependencies()
         {

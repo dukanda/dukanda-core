@@ -15,9 +15,15 @@ namespace DukandaCore.Infrastructure.Data.Seeders
             _context = context;
             _random = new Random();
         }
-
         public async Task SeedTourAgenciesAsync(int numberOfAgencies = 50)
         {
+            // Check if TourAgency table is already populated
+            var existingAgencies = await _context.Set<TourAgency>().AnyAsync();
+            if (existingAgencies)
+            {
+                return; // Skip seeding if agencies already exist
+            }
+
             // Ensure tour agency types exist
             var agencyTypes = await _context.Set<TourAgencyType>().ToListAsync();
             if (!agencyTypes.Any())
@@ -65,5 +71,5 @@ namespace DukandaCore.Infrastructure.Data.Seeders
             _context.Set<TourAgency>().AddRange(agencies);
             await _context.SaveChangesAsync();
         }
+        }
     }
-}
