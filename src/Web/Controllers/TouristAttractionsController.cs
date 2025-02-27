@@ -64,7 +64,7 @@ public class TouristAttractionsController(ISender sender) : BaseController(sende
         return Ok(result.Data);
     }
     [HttpPost("{touristAttractionId}/images")]
-    public async Task<ActionResult<List<AttractionImageDto>>> CreateImages(
+    public async Task<ActionResult> CreateImages(
         Guid touristAttractionId,
         [FromForm] CreateAttractionImagesCommand command)
     {
@@ -75,6 +75,6 @@ public class TouristAttractionsController(ISender sender) : BaseController(sende
         if (!result.IsSuccess)
             return BadRequest(result.Error);
 
-        return Ok(result.Data);
+        return Created();
     }
 }

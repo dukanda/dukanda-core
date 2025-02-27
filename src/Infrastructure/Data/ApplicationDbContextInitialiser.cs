@@ -29,11 +29,16 @@ public class ApplicationDbContextInitialiser
         _context = context;
         _passwordHasher = passwordHasher;
     }
-
     public async Task InitialiseAsync()
     {
         var tourSeeder = new TourSeeder(_context);
         await tourSeeder.SeedToursAsync();
+        
+        var touristAttractionSeeder = new TouristAttractionSeeder(_context);
+        var tourAgencySeeder = new TourAgencySeeder(_context);
+        
+        await touristAttractionSeeder.SeedTouristAttractionsAsync();
+        await tourAgencySeeder.SeedTourAgenciesAsync();   
         await _context.Database.MigrateAsync();
         await SeedDefaultUserAsync();
     }
