@@ -17,7 +17,7 @@ namespace DukandaCore.Infrastructure.Data.Seeders
             _random = new Random();
         }
 
-        public async Task SeedToursAsync(int numberOfTours = 1000)
+        public async Task SeedToursAsync(int numberOfTours = 2000)
         {
             // Delete existing tours and related entities
             await DeleteExistingToursAndDependencies();
@@ -36,7 +36,7 @@ namespace DukandaCore.Infrastructure.Data.Seeders
 
             var tourFaker = new Faker<Tour>()
                 .RuleFor(t => t.Id, f => Guid.NewGuid())
-                .RuleFor(t => t.Title, f => f.Lorem.Sentence(3, 2))
+                .RuleFor(t => t.Title, f => f.Commerce.ProductName())
                 .RuleFor(t => t.Description, f => f.Lorem.Paragraph())
                 .RuleFor(t => t.CoverImageUrl, f => f.Image.PicsumUrl())
                 .RuleFor(t => t.BasePrice, f => f.Random.Decimal(100, 5000))

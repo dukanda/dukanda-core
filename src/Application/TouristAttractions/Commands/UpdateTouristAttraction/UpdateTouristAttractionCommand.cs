@@ -10,6 +10,8 @@ public record UpdateTouristAttractionCommand : IRequest<Result<TouristAttraction
     public string Description { get; init; } = null!;
     public string Location { get; init; } = null!;
     public int CityId { get; init; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     public IFormFile? Image { get; init; }
 }
 
@@ -38,10 +40,11 @@ public class UpdateTouristAttractionCommandHandler : IRequestHandler<UpdateTouri
             using var stream = request.Image.OpenReadStream();
             attraction.ImageUrl = await _cloudinaryService.UploadFileAsync(stream, request.Image.FileName);
         }
-
+        
         attraction.Name = request.Name;
         attraction.Description = request.Description;
-        attraction.Location = request.Location;
+        attraction.Latitude = request.Latitude;
+        attraction.Longitude = request.Longitude;
         attraction.CityId = request.CityId;
 
         await _context.SaveChangesAsync(cancellationToken);

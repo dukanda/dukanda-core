@@ -4,20 +4,15 @@ using DukandaCore.Application.Common.Models;
 using DukandaCore.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
-public class AttractionImageCreateDto
+public record CreateAttractionImagesCommand : IRequest<Result>
 {
+    public Guid TouristAttractionId { get; init; }
     public IFormFile Image { get; init; } = null!;
-    public string Caption { get; init; } = string.Empty;
+    public string? Caption { get; init; } = string.Empty;
     public int DisplayOrder { get; init; }
 }
 
-public record CreateAttractionImagesCommand : IRequest<Result<List<AttractionImageDto>>>
-{
-    public Guid TouristAttractionId { get; init; }
-    public List<AttractionImageCreateDto> Images { get; init; } = new();
-}
-
-public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttractionImagesCommand, Result<List<AttractionImageDto>>>
+public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttractionImagesCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICloudinaryService _cloudinaryService;
@@ -33,33 +28,27 @@ public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttrac
         _mapper = mapper;
     }
 
-    public async Task<Result<List<AttractionImageDto>>> Handle(CreateAttractionImagesCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateAttractionImagesCommand request, CancellationToken cancellationToken)
     {
         var attraction = await _context.TouristAttractions.FindAsync(request.TouristAttractionId);
         if (attraction == null)
             return Result.Failure<List<AttractionImageDto>>(ErrorCodes.ResourceNotFound);
 
-        var images = new List<AttractionImage>();
-        
-        foreach (var imageDto in request.Images)
-        {
-            using var stream = imageDto.Image.OpenReadStream();
-            var imageUrl = await _cloudinaryService.UploadFileAsync(stream, imageDto.Image.FileName);
-            
-            var image = new AttractionImage
-            {
-                TouristAttractionId = request.TouristAttractionId,
-                ImageUrl = imageUrl,
-                Caption = imageDto.Caption,
-                DisplayOrder = imageDto.DisplayOrder
-            };
-            
-            images.Add(image);
-        }
 
-        _context.AttractionImages.AddRange(images);
+        await using var stream = request.Image.OpenReadStream();
+        var imageUrl = await _cloudinaryService.UploadFileAsync(stream, request.Image.FileName);
+            
+        var image = new AttractionImage
+        {
+            TouristAttractionId = request.TouristAttractionId,
+            ImageUrl = imageUrl,
+            Caption = request.Caption!,
+            DisplayOrder = request.DisplayOrder,
+        };
+            
+        _context.AttractionImages.Add(image);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(_mapper.Map<List<AttractionImageDto>>(images));
+        return Result.Success();
     }
 }

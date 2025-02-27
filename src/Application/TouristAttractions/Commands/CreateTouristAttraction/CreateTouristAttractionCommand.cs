@@ -9,6 +9,8 @@ public record CreateTouristAttractionCommand : IRequest<Result<TouristAttraction
     public string Description { get; init; } = null!;
     public string Location { get; init; } = null!;
     public int CityId { get; init; }
+    public double Latitude { get; set; }
+    public double Longitude { get; set; }
     public IFormFile Image { get; init; } = null!;
 }
 
@@ -32,8 +34,9 @@ public class CreateTouristAttractionCommandHandler : IRequestHandler<CreateTouri
         {
             Name = request.Name,
             Description = request.Description,
-            Location = request.Location,
             CityId = request.CityId,
+            Latitude = request.Latitude,
+            Longitude = request.Longitude,
             ImageUrl = imageUrl
         };
 
