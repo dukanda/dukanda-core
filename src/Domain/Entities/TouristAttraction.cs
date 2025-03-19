@@ -11,7 +11,7 @@ namespace DukandaCore.Domain.Entities
         public double Longitude { get; set; }
         
         public City City { get; set; } = null!;
-        public ICollection<AttractionImage> Gallery { get; set; } = new List<AttractionImage>();
+        public ICollection<AttractionGallery> Gallery { get; set; } = new List<AttractionGallery>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
         public ICollection<Tour> Tours { get; set; } = new List<Tour>();
     }

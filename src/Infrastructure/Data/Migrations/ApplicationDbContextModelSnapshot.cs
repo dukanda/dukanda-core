@@ -22,7 +22,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("DukandaCore.Domain.Entities.AttractionImage", b =>
+            modelBuilder.Entity("DukandaCore.Domain.Entities.AttractionGallery", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -58,7 +58,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
                     b.HasIndex("TouristAttractionId");
 
-                    b.ToTable("AttractionImages");
+                    b.ToTable("AttractionGalleries");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Banner", b =>
@@ -216,8 +216,69 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
+                    b.Property<string>("BookingNumber")
+                        .IsRequired()
+                        .HasColumnType("text");
+
                     b.Property<int>("BookingStatusId")
                         .HasColumnType("integer");
+
+                    b.Property<string>("CancellationReason")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ExpirationDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("PackageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("PaymentDate")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("PaymentIntentId")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("QrCodeUrl")
+                        .HasColumnType("text");
+
+                    b.Property<decimal>("TotalPrice")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingStatusId");
+
+                    b.HasIndex("PackageId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Bookings");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.BookingItem", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -234,21 +295,22 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Property<Guid>("PackageId")
                         .HasColumnType("uuid");
 
-                    b.Property<decimal>("Price")
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
+
+                    b.Property<decimal>("TotalPrice")
                         .HasColumnType("numeric");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
+                    b.Property<decimal>("UnitPrice")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingStatusId");
+                    b.HasIndex("BookingId");
 
                     b.HasIndex("PackageId");
 
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Bookings");
+                    b.ToTable("BookingItem");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.BookingStatus", b =>
@@ -287,7 +349,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         {
                             Id = 1,
                             Color = "#FFA500",
-                            Description = "Reserva aguardando confirmação",
+                            Description = "Estado inicial quando a reserva é criada",
                             DisplayOrder = 1,
                             Icon = "clock",
                             Name = "Pendente"
@@ -295,29 +357,74 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         new
                         {
                             Id = 2,
-                            Color = "#008000",
-                            Description = "Reserva confirmada",
+                            Color = "#4CAF50",
+                            Description = "Vagas temporariamente reservadas",
                             DisplayOrder = 2,
-                            Icon = "check",
-                            Name = "Confirmado"
+                            Icon = "calendar-check",
+                            Name = "Reservado"
                         },
                         new
                         {
                             Id = 3,
-                            Color = "#FF0000",
-                            Description = "Reserva cancelada",
+                            Color = "#FF9800",
+                            Description = "Aguardando confirmação de pagamento",
                             DisplayOrder = 3,
-                            Icon = "x",
-                            Name = "Cancelado"
+                            Icon = "credit-card",
+                            Name = "Pagamento Pendente"
                         },
                         new
                         {
                             Id = 4,
-                            Color = "#0000FF",
-                            Description = "Tour realizado",
+                            Color = "#2196F3",
+                            Description = "Pagamento confirmado e reserva ativa",
                             DisplayOrder = 4,
-                            Icon = "flag",
+                            Icon = "check-circle",
+                            Name = "Confirmado"
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Color = "#9C27B0",
+                            Description = "Passeio foi completado",
+                            DisplayOrder = 5,
+                            Icon = "check-double",
                             Name = "Concluído"
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Color = "#F44336",
+                            Description = "Reserva cancelada pelo usuário",
+                            DisplayOrder = 6,
+                            Icon = "times-circle",
+                            Name = "Cancelado"
+                        },
+                        new
+                        {
+                            Id = 7,
+                            Color = "#795548",
+                            Description = "Reserva expirada (pagamento não recebido a tempo)",
+                            DisplayOrder = 7,
+                            Icon = "clock",
+                            Name = "Expirado"
+                        },
+                        new
+                        {
+                            Id = 8,
+                            Color = "#607D8B",
+                            Description = "Reserva foi reembolsada",
+                            DisplayOrder = 8,
+                            Icon = "undo",
+                            Name = "Reembolsado"
+                        },
+                        new
+                        {
+                            Id = 9,
+                            Color = "#FF5722",
+                            Description = "Falha no pagamento ou outro processo",
+                            DisplayOrder = 9,
+                            Icon = "exclamation-triangle",
+                            Name = "Falha"
                         });
                 });
 
@@ -516,11 +623,19 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         });
                 });
 
-            modelBuilder.Entity("DukandaCore.Domain.Entities.Package", b =>
+            modelBuilder.Entity("DukandaCore.Domain.Entities.News", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("CoverImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<DateTimeOffset>("Created")
                         .HasColumnType("timestamp with time zone");
@@ -528,11 +643,111 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Property<Guid?>("CreatedById")
                         .HasColumnType("uuid");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("IsFeatured")
+                        .HasColumnType("boolean");
+
                     b.Property<DateTimeOffset>("LastModified")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid?>("LastModifiedById")
                         .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("PublishedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("PublishedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Tags")
+                        .HasColumnType("text");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("ViewCount")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PublishedById");
+
+                    b.ToTable("News");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.NewsGallery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Caption")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("NewsId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("NewsId");
+
+                    b.ToTable("NewsGalleries");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.Package", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("AvailableSlots")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("MaxParticipants")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("MaxSlots")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -549,6 +764,107 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.HasIndex("TourId");
 
                     b.ToTable("Packages");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.PaymentIntent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("numeric");
+
+                    b.Property<Guid>("BookingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("CompletedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("MetaData")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("PaymentMethodId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("TransactionReference")
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookingId")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentMethodId");
+
+                    b.ToTable("PaymentIntent");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.PaymentMethod", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Color")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Icon")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PaymentMethod");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Color = "#4CAF50",
+                            Description = "Pagamento via transferência bancária",
+                            DisplayOrder = 1,
+                            Icon = "bank",
+                            Name = "Transferência Bancária"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Color = "#2196F3",
+                            Description = "Pagamento com cartão Visa",
+                            DisplayOrder = 2,
+                            Icon = "credit-card",
+                            Name = "Visa"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Color = "#FF9800",
+                            Description = "Pagamento via Multicaixa Express",
+                            DisplayOrder = 3,
+                            Icon = "mobile-alt",
+                            Name = "Multicaixa Express"
+                        });
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Review", b =>
@@ -686,6 +1002,9 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Property<Guid>("AgencyId")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("AvailableSlots")
+                        .HasColumnType("integer");
+
                     b.Property<decimal>("BasePrice")
                         .HasColumnType("numeric");
 
@@ -730,6 +1049,9 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("TotalSlots")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 
@@ -828,6 +1150,45 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                             Icon = "building",
                             Name = "Empresa"
                         });
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.TourGallery", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Caption")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("Created")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("DisplayOrder")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset>("LastModified")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("LastModifiedById")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("TourId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TourId");
+
+                    b.ToTable("TourGalleries");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.TourItinerary", b =>
@@ -1115,19 +1476,19 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("8f2bdcde-592c-469c-a258-fc5a4fa39a95"),
+                            Id = new Guid("13bbd941-6da6-4173-9777-18847f7c8cc2"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("2bd1ea02-f706-4db3-9be8-bebad5348089"),
+                            Id = new Guid("0df81c57-6bc4-4863-b327-48dac0d91dae"),
                             Name = "TourAgency",
                             NormalizedName = "TOUR_AGENCY"
                         },
                         new
                         {
-                            Id = new Guid("232fe3c4-487d-4b08-b74c-abf32f0be7c3"),
+                            Id = new Guid("2fc86872-cd18-4051-86ab-a123df302995"),
                             Name = "Tourist",
                             NormalizedName = "TOURIST"
                         });
@@ -1163,7 +1524,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.ToTable("TourTouristAttraction");
                 });
 
-            modelBuilder.Entity("DukandaCore.Domain.Entities.AttractionImage", b =>
+            modelBuilder.Entity("DukandaCore.Domain.Entities.AttractionGallery", b =>
                 {
                     b.HasOne("DukandaCore.Domain.Entities.TouristAttraction", "TouristAttraction")
                         .WithMany("Gallery")
@@ -1198,17 +1559,15 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Booking", b =>
                 {
-                    b.HasOne("DukandaCore.Domain.Entities.BookingStatus", "Status")
+                    b.HasOne("DukandaCore.Domain.Entities.BookingStatus", "BookingStatus")
                         .WithMany("Bookings")
                         .HasForeignKey("BookingStatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("DukandaCore.Domain.Entities.Package", "Package")
+                    b.HasOne("DukandaCore.Domain.Entities.Package", null)
                         .WithMany("Bookings")
-                        .HasForeignKey("PackageId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("PackageId");
 
                     b.HasOne("DukandaCore.Domain.Identity.User", "User")
                         .WithMany()
@@ -1216,11 +1575,48 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Package");
-
-                    b.Navigation("Status");
+                    b.Navigation("BookingStatus");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.BookingItem", b =>
+                {
+                    b.HasOne("DukandaCore.Domain.Entities.Booking", "Booking")
+                        .WithMany("Items")
+                        .HasForeignKey("BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DukandaCore.Domain.Entities.Package", "Package")
+                        .WithMany()
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("Package");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.News", b =>
+                {
+                    b.HasOne("DukandaCore.Domain.Identity.User", "PublishedBy")
+                        .WithMany()
+                        .HasForeignKey("PublishedById");
+
+                    b.Navigation("PublishedBy");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.NewsGallery", b =>
+                {
+                    b.HasOne("DukandaCore.Domain.Entities.News", "News")
+                        .WithMany("Gallery")
+                        .HasForeignKey("NewsId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("News");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Package", b =>
@@ -1232,6 +1628,25 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Tour");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.PaymentIntent", b =>
+                {
+                    b.HasOne("DukandaCore.Domain.Entities.Booking", "Booking")
+                        .WithOne("PaymentIntent")
+                        .HasForeignKey("DukandaCore.Domain.Entities.PaymentIntent", "BookingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("DukandaCore.Domain.Entities.PaymentMethod", "PaymentMethod")
+                        .WithMany("PaymentIntents")
+                        .HasForeignKey("PaymentMethodId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Booking");
+
+                    b.Navigation("PaymentMethod");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Review", b =>
@@ -1339,6 +1754,17 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("DukandaCore.Domain.Entities.TourGallery", b =>
+                {
+                    b.HasOne("DukandaCore.Domain.Entities.Tour", "Tour")
+                        .WithMany("Gallery")
+                        .HasForeignKey("TourId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Tour");
+                });
+
             modelBuilder.Entity("DukandaCore.Domain.Entities.TourItinerary", b =>
                 {
                     b.HasOne("DukandaCore.Domain.Entities.Tour", "Tour")
@@ -1415,6 +1841,14 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Navigation("Banners");
                 });
 
+            modelBuilder.Entity("DukandaCore.Domain.Entities.Booking", b =>
+                {
+                    b.Navigation("Items");
+
+                    b.Navigation("PaymentIntent")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("DukandaCore.Domain.Entities.BookingStatus", b =>
                 {
                     b.Navigation("Bookings");
@@ -1427,11 +1861,21 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.Navigation("Tours");
                 });
 
+            modelBuilder.Entity("DukandaCore.Domain.Entities.News", b =>
+                {
+                    b.Navigation("Gallery");
+                });
+
             modelBuilder.Entity("DukandaCore.Domain.Entities.Package", b =>
                 {
                     b.Navigation("Benefits");
 
                     b.Navigation("Bookings");
+                });
+
+            modelBuilder.Entity("DukandaCore.Domain.Entities.PaymentMethod", b =>
+                {
+                    b.Navigation("PaymentIntents");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.TodoList", b =>
@@ -1441,6 +1885,8 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.Tour", b =>
                 {
+                    b.Navigation("Gallery");
+
                     b.Navigation("Itineraries");
 
                     b.Navigation("Packages");

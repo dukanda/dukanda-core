@@ -1,3 +1,4 @@
+using DukandaCore.Application.Tours.Dtos;
 using DukandaCore.Domain.Entities;
 
 public class TourDetailDto : TourDto

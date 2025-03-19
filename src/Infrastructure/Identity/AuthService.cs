@@ -1,7 +1,6 @@
 using DukandaCore.Application.Common.Interfaces;
 using DukandaCore.Application.Common.Models;
 using DukandaCore.Application.Common.Constants;
-using DukandaCore.Domain.Identity;
 using DukandaCore.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +21,7 @@ public class AuthService : IAuthService
 
     public async Task<(bool success, string token, string refreshToken)> LoginAsync(string email, string password)
     {
-        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email)!;
         if (user == null || !_passwordHasher.VerifyPassword(user.PasswordHash!, password))
             return (false, string.Empty, string.Empty);
 
@@ -46,7 +45,7 @@ public class AuthService : IAuthService
 
     public async Task ForgotPasswordAsync(string email)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(u => u.Email == email);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
         if (user == null)
             throw new InvalidOperationException(ErrorCodes.UserNotFound);
        
@@ -67,7 +66,7 @@ public class AuthService : IAuthService
 
     public async Task<string> RefreshTokenAsync(string refreshToken)
     {
-        var user = await _context.Users.SingleOrDefaultAsync(u => u.RefreshToken == refreshToken);
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
         if (user == null || user.RefreshTokenExpiryTime < DateTime.UtcNow)
             throw new InvalidOperationException(ErrorCodes.InvalidOrExpiredToken);
 

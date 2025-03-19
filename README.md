@@ -1,71 +1,74 @@
 ﻿# DukandaCore
 
-The project was generated using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/CleanArchitecture) version 9.0.8.
+A clean architecture .NET solution for the Dukanda platform, built using the [Clean.Architecture.Solution.Template](https://github.com/jasontaylordev/CleanArchitecture).
 
-## Build
+## Prerequisites
 
-Run `dotnet build -tl` to build the solution.
+- .NET 8.0 SDK or later
+- SQL Server
 
-## Run
+## Getting Started
+
+1. Clone the repository
+2. Build the solution:
+```bash
+dotnet build -tl
+```
+
+## Development
 
 To run the web application:
 
 ```bash
-cd .\src\Web\
+cd src/Web/
 dotnet watch run
 ```
 
-Navigate to https://localhost:5001. The application will automatically reload if you change any of the source files.
+Navigate to https://localhost:5001. The application will automatically reload when you make changes to the source files.
 
-## Code Styles & Formatting
+## Project Structure
 
-The template includes [EditorConfig](https://editorconfig.org/) support to help maintain consistent coding styles for multiple developers working on the same project across various editors and IDEs. The **.editorconfig** file defines the coding styles applicable to this solution.
+- `src/`
+  - `Application/` - Application layer containing business logic, interfaces, and DTOs
+  - `Domain/` - Domain entities and business rules
+  - `Infrastructure/` - External concerns and implementations
+  - `Web/` - API endpoints and web-specific concerns
 
-## Code Scaffolding
+## Testing
 
-The template includes support to scaffold new commands and queries.
+The solution includes different types of tests:
 
-Start in the `.\src\Application\` folder.
+- Unit Tests
+- Integration Tests
+- Functional Tests
+- Acceptance Tests
 
-Create a new command:
+### Running Tests
 
-```
-dotnet new ca-usecase --name CreateTodoList --feature-name TodoLists --usecase-type command --return-type int
-```
-
-Create a new query:
-
-```
-dotnet new ca-usecase -n GetTodos -fn TodoLists -ut query -rt TodosVm
-```
-
-If you encounter the error *"No templates or subcommands found matching: 'ca-usecase'."*, install the template and try again:
-
-```bash
-dotnet new install Clean.Architecture.Solution.Template::9.0.8
-```
-
-## Test
-
-The solution contains unit, integration, functional, and acceptance tests.
-
-To run the unit, integration, and functional tests (excluding acceptance tests):
+To run all tests except acceptance tests:
 ```bash
 dotnet test --filter "FullyQualifiedName!~AcceptanceTests"
 ```
 
-To run the acceptance tests, first start the application:
-
+For acceptance tests:
+1. Start the application:
 ```bash
-cd .\src\Web\
+cd src/Web/
 dotnet run
 ```
 
-Then, in a new console, run the tests:
+2. In a new terminal, run:
 ```bash
-cd .\src\Web\
+cd tests/AcceptanceTests/
 dotnet test
 ```
 
-## Help
-To learn more about the template go to the [project website](https://github.com/jasontaylordev/CleanArchitecture). Here you can find additional guidance, request new features, report a bug, and discuss the template with other users.
+## Code Style
+
+This project uses [EditorConfig](https://editorconfig.org/) to maintain consistent coding styles. The rules are defined in the `.editorconfig` file at the solution root.
+
+## Contributing
+
+1. Create a new branch for your feature
+2. Make your changes
+3. Submit a pull request

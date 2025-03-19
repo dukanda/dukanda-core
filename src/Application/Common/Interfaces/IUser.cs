@@ -3,4 +3,5 @@
 public interface IUser
 {
     Guid? Id { get; }
+    bool IsInRole(string roleName);
 }
