@@ -30,7 +30,8 @@ public class AuthController(ISender sender) : BaseController(sender)
         var result = await _sender.Send(command);
         if (!result.IsSuccess)
             return Unauthorized(result.Error);
-        return NoContent();
+        //Adicionar redirect frontend
+        return Redirect("dukanda.ao");
     }
 
     [HttpPost("refresh-token")]
