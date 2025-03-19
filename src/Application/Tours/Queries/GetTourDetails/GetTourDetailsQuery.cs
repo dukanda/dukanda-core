@@ -19,14 +19,15 @@ public class GetTourDetailsQueryHandler : IRequestHandler<GetTourDetailsQuery, R
     public async Task<Result<TourDetailDto>> Handle(GetTourDetailsQuery request, CancellationToken cancellationToken)
     {
         var tour = await _context.Tours
-            .Include(t=>t.Agency)
-            .Include(t=>t.TourTypes)
+            .Include(t => t.Agency)
+            .Include(t => t.TourTypes)
             .Include(t => t.Itineraries)
             .Include(t => t.City)
             .Include(t => t.Attractions)
                .ThenInclude(t => t.City)
             .Include(t => t.Packages)
-            .ThenInclude(p => p.Benefits)
+                .ThenInclude(p => p.Benefits)
+            .Include(t => t.Gallery)
             .FirstOrDefaultAsync(t => t.Id == request.TourId, cancellationToken);
 
         if (tour == null)

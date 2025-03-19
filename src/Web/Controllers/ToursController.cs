@@ -1,7 +1,13 @@
+using DukandaCore.Application.Tours.Commands.AddPackage;
 using DukandaCore.Application.Tours.Commands.AddTourAttraction;
 using DukandaCore.Application.Tours.Commands.RemovePackage;
 using DukandaCore.Application.Tours.Commands.RemoveTourAttraction;
 using DukandaCore.Application.Tours.Commands.RemoveTourItinerary;
+using DukandaCore.Application.Tours.Commands.CreateTourImages;
+using DukandaCore.Application.Tours.Commands.RemoveTourImage;
+using DukandaCore.Application.Tours.Queries.SearchTours;
+using DukandaCore.Application.Tours.Queries.CheckTourAvailability;
+using DukandaCore.Application.Tours.Commands.PublishTour;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DukandaCore.Web.Controllers;
@@ -48,7 +54,7 @@ public class ToursController : BaseController
     }
 
     [HttpPost("{id}/publish")]
-    public async Task<ActionResult> Publish(Guid id)
+    public async Task<ActionResult> PublishTour(Guid id)
     {
         var command = new PublishTourCommand { Id = id };
         var result = await _sender.Send(command);
@@ -68,21 +74,20 @@ public class ToursController : BaseController
         return Ok(result.Data);
     }
 
-[HttpGet("{id}")]
-public async Task<ActionResult> GetTourDetails(Guid id)
-{
-    var query = new GetTourDetailsQuery { TourId = id };
-    var result = await _sender.Send(query);
+    [HttpGet("{id}")]
+    public async Task<ActionResult> GetTourDetails(Guid id)
+    {
+        var query = new GetTourDetailsQuery { TourId = id };
+        var result = await _sender.Send(query);
 
-    if (!result.IsSuccess)
-        return BadRequest(result.Error);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
 
-    return Ok(result.Data);
-}
-
+        return Ok(result.Data);
+    }
 
     [HttpGet("featured")]
-    public async Task<ActionResult> GetFeatured()
+    public async Task<ActionResult> GetFeaturedTours()
     {
         var result = await _sender.Send(new GetFeaturedToursQuery());
         if (!result.IsSuccess)
@@ -110,6 +115,7 @@ public async Task<ActionResult> GetTourDetails(Guid id)
             return BadRequest(result.Error);
         return Ok(result.Data);
     }
+
     [HttpDelete("packages/{packageId}")]
     public async Task<ActionResult> RemovePackage(Guid packageId)
     {
@@ -120,15 +126,6 @@ public async Task<ActionResult> GetTourDetails(Guid id)
             return BadRequest(result.Error);
     
         return NoContent();
-    }
-
-    [HttpPost("bookings")]
-    public async Task<ActionResult> CreateBooking(CreateBookingCommand command)
-    {
-        var result = await _sender.Send(command);
-        if (!result.IsSuccess)
-            return BadRequest(result.Error);
-        return Ok(result.Data);
     }
 
     // Itinerary Endpoints
@@ -182,4 +179,52 @@ public async Task<ActionResult> GetTourDetails(Guid id)
         return Ok();
     }
 
+    // Gallery Endpoints
+    [HttpPost("{tourId}/gallery")]
+    public async Task<ActionResult> AddGalleryImage(Guid tourId, [FromForm] CreateTourImagesCommand command)
+    {
+        if (tourId != command.TourId)
+            return BadRequest();
+
+        var result = await _sender.Send(command);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        return Ok(result);
+    }
+
+    [HttpDelete("{tourId}/gallery/{imageId}")]
+    public async Task<ActionResult> RemoveGalleryImage(Guid tourId, Guid imageId)
+    {
+        var command = new RemoveTourImageCommand
+        {
+            TourId = tourId,
+            ImageId = imageId
+        };
+
+        var result = await _sender.Send(command);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        return NoContent();
+    }
+
+    [HttpGet("search")]
+    public async Task<ActionResult> SearchTours([FromQuery] SearchToursQuery query)
+    {
+        var result = await _sender.Send(query);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        return Ok(result.Data);
+    }
+
+    [HttpGet("{id}/availability")]
+    public async Task<ActionResult> CheckAvailability(Guid id, [FromQuery] CheckTourAvailabilityQuery query)
+    {
+        if (id != query.TourId)
+            return BadRequest();
+
+        var result = await _sender.Send(query);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        return Ok(result.Data);
+    }
 }

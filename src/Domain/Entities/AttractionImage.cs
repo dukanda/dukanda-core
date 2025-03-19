@@ -1,6 +1,6 @@
 namespace DukandaCore.Domain.Entities
 {
-    public class AttractionImage : BaseAuditableEntity
+    public class AttractionGallery : BaseAuditableEntity
     {
         public Guid TouristAttractionId { get; set; }
         public string ImageUrl { get; set; } = null!;

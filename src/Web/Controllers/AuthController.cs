@@ -6,14 +6,13 @@ namespace DukandaCore.Web.Controllers;
 
 public class AuthController(ISender sender) : BaseController(sender)
 {
-
     [HttpPost("register")]
     public async Task<ActionResult> Register(RegisterUserCommand command)
     {
         var result = await _sender.Send(command);
         if (!result.IsSuccess)
-            return BadRequest(result.Error);
-        return Unauthorized(result.Data);
+            return Unauthorized(result.Error);
+        return Ok(result.Data);
     }
 
     [HttpPost("login")]
@@ -22,8 +21,7 @@ public class AuthController(ISender sender) : BaseController(sender)
         var result = await _sender.Send(command);
         if (!result.IsSuccess)
             return Unauthorized(result.Error);
-        else
-            return Ok(result.Data);
+        return Ok(result.Data);
     }
 
     [HttpPost("verify-email")]

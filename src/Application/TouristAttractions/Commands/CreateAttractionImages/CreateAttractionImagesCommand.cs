@@ -4,7 +4,7 @@ using DukandaCore.Application.Common.Models;
 using DukandaCore.Domain.Entities;
 using Microsoft.AspNetCore.Http;
 
-public record CreateAttractionImagesCommand : IRequest<Result>
+public record CreateAttractionGallerysCommand : IRequest<Result>
 {
     public Guid TouristAttractionId { get; init; }
     public IFormFile Image { get; init; } = null!;
@@ -12,13 +12,13 @@ public record CreateAttractionImagesCommand : IRequest<Result>
     public int DisplayOrder { get; init; }
 }
 
-public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttractionImagesCommand, Result>
+public class CreateAttractionGallerysCommandHandler : IRequestHandler<CreateAttractionGallerysCommand, Result>
 {
     private readonly IApplicationDbContext _context;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IMapper _mapper;
 
-    public CreateAttractionImagesCommandHandler(
+    public CreateAttractionGallerysCommandHandler(
         IApplicationDbContext context,
         ICloudinaryService cloudinaryService,
         IMapper mapper)
@@ -28,17 +28,17 @@ public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttrac
         _mapper = mapper;
     }
 
-    public async Task<Result> Handle(CreateAttractionImagesCommand request, CancellationToken cancellationToken)
+    public async Task<Result> Handle(CreateAttractionGallerysCommand request, CancellationToken cancellationToken)
     {
         var attraction = await _context.TouristAttractions.FindAsync(request.TouristAttractionId);
         if (attraction == null)
-            return Result.Failure<List<AttractionImageDto>>(ErrorCodes.ResourceNotFound);
+            return Result.Failure<List<AttractionGalleryDto>>(ErrorCodes.ResourceNotFound);
 
 
         await using var stream = request.Image.OpenReadStream();
         var imageUrl = await _cloudinaryService.UploadFileAsync(stream, request.Image.FileName);
             
-        var image = new AttractionImage
+        var image = new AttractionGallery
         {
             TouristAttractionId = request.TouristAttractionId,
             ImageUrl = imageUrl,
@@ -46,7 +46,7 @@ public class CreateAttractionImagesCommandHandler : IRequestHandler<CreateAttrac
             DisplayOrder = request.DisplayOrder,
         };
             
-        _context.AttractionImages.Add(image);
+        _context.AttractionGalleries.Add(image);
         await _context.SaveChangesAsync(cancellationToken);
 
         return Result.Success();

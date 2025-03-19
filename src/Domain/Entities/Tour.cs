@@ -15,6 +15,9 @@ namespace DukandaCore.Domain.Entities
         public bool IsFeatured { get; set; }
         public DateTimeOffset? PublishedAt { get; set; }
         public Guid? PublishedById { get; set; }
+        public int TotalSlots { get; set; }
+        public int AvailableSlots { get; set; }
+        public bool IsFullyBooked => AvailableSlots <= 0;
 
         public City City { get; set; } = null!;
         public TourAgency Agency { get; set; } = null!;
@@ -24,5 +27,6 @@ namespace DukandaCore.Domain.Entities
         public ICollection<TourType> TourTypes { get; set; } = new List<TourType>();
         public ICollection<TouristAttraction> Attractions { get; set; } = new List<TouristAttraction>();
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+        public ICollection<TourGallery> Gallery { get; set; } = new List<TourGallery>();
     }
 }

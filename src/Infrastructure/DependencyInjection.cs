@@ -6,6 +6,7 @@ using DukandaCore.Infrastructure.Data.Interceptors;
 using DukandaCore.Infrastructure.Email;
 using DukandaCore.Infrastructure.FileStorage;
 using DukandaCore.Infrastructure.Identity;
+using DukandaCore.Infrastructure.QrCode;
 using Hangfire;
 using Hangfire.Storage.SQLite;
 using Microsoft.AspNetCore.Identity;
@@ -51,6 +52,7 @@ public static class DependencyInjection
         builder.Services.AddTransient<IPasswordHasher, PasswordHasher>();
         builder.Services.AddTransient<IEmailService, EmailService>();
         builder.Services.AddTransient<ICloudinaryService, CloudinaryService>();
+        builder.Services.AddTransient<IQrCodeService, QrCodeService>();
 
         builder.Services.AddAuthorization(options =>
             options.AddPolicy(Policies.CanPurge, policy => policy.RequireRole(Roles.Administrator)));

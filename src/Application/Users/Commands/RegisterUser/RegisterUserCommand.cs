@@ -8,8 +8,7 @@ public record RegisterUserCommand : IRequest<Result<UserDto>>
 {
     public string Email { get; init; } = null!;
     public string Password { get; init; } = null!;
-    public string FirstName { get; init; } = null!;
-    public string LastName { get; init; } = null!;
+    public string Name { get; init; } = null!;
     public string PhoneNumber { get; init; } = null!;
 }
 
@@ -33,8 +32,8 @@ public class RegisterUserCommandHandler : IRequestHandler<RegisterUserCommand, R
         {
             Email = request.Email,
             UserName = request.Email,
-            FirstName = request.FirstName,
-            LastName = request.LastName,
+            FirstName = request.Name,
+            LastName = "",
             PhoneNumber = request.PhoneNumber,
             PasswordHash = _passwordHasher.HashPassword(request.Password),
             AvatarUrl = "",

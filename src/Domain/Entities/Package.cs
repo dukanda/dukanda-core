@@ -4,9 +4,14 @@ namespace DukandaCore.Domain.Entities
 {
     public class Package : BaseAuditableEntity
     {
-        public string Name { get; set; } = null!;
-        public decimal Price { get; set; }
         public Guid TourId { get; set; }
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public decimal Price { get; set; }
+        public int MaxParticipants { get; set; }
+        public int MaxSlots { get; set; }
+        public int AvailableSlots { get; set; }
+        public bool IsFullyBooked => AvailableSlots <= 0;
 
         public Tour Tour { get; set; } = null!;
         public List<Benefit> Benefits { get; set; } = new();
