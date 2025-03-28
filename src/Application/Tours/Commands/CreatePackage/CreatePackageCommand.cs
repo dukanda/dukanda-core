@@ -41,6 +41,6 @@ public class CreatePackageCommandHandler : IRequestHandler<CreatePackageCommand,
         _context.Packages.Add(package);
         await _context.SaveChangesAsync(cancellationToken);
 
-        return Result.Success(_mapper.Map<PackageDto>(package));
+        return Result.Success(new PackageDto(package));
     }
 } 

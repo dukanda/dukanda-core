@@ -19,16 +19,25 @@ public class AuthService : IAuthService
         _tokenService = tokenService;
     }
 
-    public async Task<(bool success, string token, string refreshToken)> LoginAsync(string email, string password)
+    public async Task<(bool success, string token, string refreshToken, UserDto? user)> LoginAsync(string email, string password)
     {
         var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email)!;
         if (user == null || !_passwordHasher.VerifyPassword(user.PasswordHash!, password))
-            return (false, string.Empty, string.Empty);
+            return (false, string.Empty, string.Empty, null);
 
         var token = _tokenService.GenerateJwtToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
+        var userDto = new UserDto(user);
+        return (true, token, refreshToken, userDto);
+    }
+
+    public async Task<UserDto> GetUserByIdAsync(Guid userId)
+    {
+        var user = await _context.Users.FirstOrDefaultAsync(u => u.Id == userId)!;
+        if(user == null)
+           throw new InvalidOperationException($"User with id {userId} not found");
         
-        return (true, token, refreshToken);
+        return new UserDto(user);
     }
 
     public async Task ConfirmEmailAsync(string userId, string token)

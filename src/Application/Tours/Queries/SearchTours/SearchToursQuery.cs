@@ -4,7 +4,7 @@ namespace DukandaCore.Application.Tours.Queries.SearchTours;
 
 public record SearchToursQuery : IRequest<Result<List<TourDto>>>
 {
-    public string? SearchTerm { get; init; }
+    public string? Search { get; init; }
     public DateTime? FromDate { get; init; }
     public DateTime? ToDate { get; init; }
     public decimal? MinPrice { get; init; }

@@ -6,7 +6,7 @@ public record GetTourTypesQuery : IRequest<Result<PaginatedList<TourTypeDto>>>
 {
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
-    public string? SearchTerm { get; init; }
+    public string? Search { get; init; }
 }
 
 public class GetTourTypesQueryHandler : IRequestHandler<GetTourTypesQuery, Result<PaginatedList<TourTypeDto>>>
@@ -22,11 +22,11 @@ public class GetTourTypesQueryHandler : IRequestHandler<GetTourTypesQuery, Resul
     {
         var query = _context.TourTypes.AsQueryable();
 
-        if (!string.IsNullOrEmpty(request.SearchTerm))
+        if (!string.IsNullOrEmpty(request.Search))
         {
             query = query.Where(t => 
-                t.Name.Contains(request.SearchTerm) || 
-                t.Description.Contains(request.SearchTerm)
+                t.Name.Contains(request.Search) || 
+                t.Description.Contains(request.Search)
             );
         }
 

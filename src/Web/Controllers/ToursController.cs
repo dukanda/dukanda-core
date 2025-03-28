@@ -8,7 +8,9 @@ using DukandaCore.Application.Tours.Commands.RemoveTourImage;
 using DukandaCore.Application.Tours.Queries.SearchTours;
 using DukandaCore.Application.Tours.Queries.CheckTourAvailability;
 using DukandaCore.Application.Tours.Commands.PublishTour;
+using DukandaCore.Application.Tours.Queries.GetAgencyTours;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DukandaCore.Web.Controllers;
 
@@ -104,11 +106,12 @@ public class ToursController : BaseController
         return Ok(result.Data);
     }
 
-    [HttpPost("{tourId}/packages")]
-    public async Task<ActionResult> AddPackage(Guid tourId, AddPackageCommand command)
+    [HttpPost("packages")]
+    public async Task<ActionResult> AddPackage(
+        [FromBody] AddPackageCommand command)
     {
-        if (tourId != command.TourId)
-            return BadRequest();
+        // if (tourId != command.TourId)
+        //     return BadRequest();
 
         var result = await _sender.Send(command);
         if (!result.IsSuccess)
@@ -121,10 +124,10 @@ public class ToursController : BaseController
     {
         var command = new RemovePackageCommand { PackageId = packageId };
         var result = await _sender.Send(command);
-    
+
         if (!result.IsSuccess)
             return BadRequest(result.Error);
-    
+
         return NoContent();
     }
 
@@ -222,6 +225,16 @@ public class ToursController : BaseController
         if (id != query.TourId)
             return BadRequest();
 
+        var result = await _sender.Send(query);
+        if (!result.IsSuccess)
+            return BadRequest(result.Error);
+        return Ok(result.Data);
+    }
+
+    [HttpGet("my-agency")]
+    [Authorize]
+    public async Task<ActionResult> GetMyAgencyTours([FromQuery] GetAgencyToursQuery query)
+    {
         var result = await _sender.Send(query);
         if (!result.IsSuccess)
             return BadRequest(result.Error);

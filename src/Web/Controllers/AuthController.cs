@@ -1,6 +1,9 @@
 using DukandaCore.Application.Auth.Commands.Login;
 using Microsoft.AspNetCore.Mvc;
 using MediatR;
+using DukandaCore.Application.Users.Queries.GetUserById;
+using DukandaCore.Application.Users.Queries.GetCurrentUser;
+using Microsoft.AspNetCore.Authorization;
 
 namespace DukandaCore.Web.Controllers;
 
@@ -41,5 +44,24 @@ public class AuthController(ISender sender) : BaseController(sender)
         if (!result.IsSuccess)
             return Unauthorized(result.Error);
         return NoContent();
+    }
+
+    [HttpGet("users/{userId}")]
+    public async Task<ActionResult> GetUser(Guid userId)
+    {
+        var result = await _sender.Send(new GetUserByIdQuery(userId));
+        if (!result.IsSuccess)
+            return NotFound(result.Error);
+        return Ok(result.Data);
+    }
+
+    [HttpGet("users/me")]
+    [Authorize]
+    public async Task<ActionResult> GetCurrentUser()
+    {
+        var result = await _sender.Send(new GetCurrentUserQuery());
+        if (!result.IsSuccess)
+            return Unauthorized(result.Error);
+        return Ok(result.Data);
     }
 }

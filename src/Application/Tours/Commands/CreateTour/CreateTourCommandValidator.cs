@@ -26,9 +26,7 @@ public class CreateTourCommandValidator : AbstractValidator<CreateTourCommand>
         RuleFor(x => x.EndDate)
             .NotEmpty().WithMessage("A data de término é obrigatória")
             .GreaterThan(x => x.StartDate).WithMessage("A data de término deve ser posterior à data de início");
-
-        RuleFor(x => x.AgencyId)
-            .MustAsync(AgencyExists).WithMessage("A agência não existe");
+        
 
         RuleFor(x => x.TourTypeIds)
             .NotEmpty().WithMessage("Pelo menos um tipo de tour deve ser selecionado")

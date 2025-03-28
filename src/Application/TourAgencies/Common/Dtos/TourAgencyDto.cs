@@ -9,6 +9,7 @@ public class TourAgencyDto
     public string ContactPhone { get; set; } = null!;
     public string Address { get; set; } = null!;
     public string LogoUrl { get; set; } = null!;
+    public bool IsVerified { get; set; }
     public int TourAgencyTypeId { get; set; }
     public string AgencyType { get; set; } = null!;
     public int ToursCount { get; set; }
@@ -24,5 +25,7 @@ public class TourAgencyDto
         LogoUrl = tourAgency.LogoUrl;
         TourAgencyTypeId = tourAgency.TourAgencyTypeId;
         AgencyType = tourAgency?.TourAgencyType?.Name ?? string.Empty;
+        IsVerified = tourAgency?.IsVerified ?? false;
+        ToursCount = tourAgency?.Tours?.Count() ?? 0;
     }
 }
