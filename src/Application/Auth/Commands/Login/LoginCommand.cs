@@ -22,7 +22,7 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
 
     public async Task<Result<LoginResponseDto>> Handle(LoginCommand request, CancellationToken cancellationToken)
     {
-        var (success, token, refreshToken) =
+        var (success, token, refreshToken, user) =
             await _authService.LoginAsync(request.Email, request.Password);
 
         if (!success)
@@ -31,7 +31,8 @@ public class LoginCommandHandler : IRequestHandler<LoginCommand, Result<LoginRes
         return Result.Success(new LoginResponseDto
         {
             Token = token,
-            RefreshToken = refreshToken
+            RefreshToken = refreshToken,
+            User = user!
         });
     }
 }

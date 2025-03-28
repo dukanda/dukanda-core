@@ -6,7 +6,7 @@ public record GetCitiesQuery : IRequest<Result<PaginatedList<CityDto>>>
 {
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
-    public string? SearchTerm { get; init; }
+    public string? Search { get; init; }
 }
 
 public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, Result<PaginatedList<CityDto>>>
@@ -22,11 +22,11 @@ public class GetCitiesQueryHandler : IRequestHandler<GetCitiesQuery, Result<Pagi
     {
         var query = _context.Cities.AsQueryable();
 
-        if (!string.IsNullOrEmpty(request.SearchTerm))
+        if (!string.IsNullOrEmpty(request.Search))
         {
             query = query.Where(c => 
-                c.Name.Contains(request.SearchTerm) || 
-                c.Description.Contains(request.SearchTerm)
+                c.Name.Contains(request.Search) || 
+                c.Description.Contains(request.Search)
             );
         }
 

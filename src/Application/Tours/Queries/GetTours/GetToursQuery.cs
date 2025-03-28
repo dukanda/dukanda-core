@@ -8,7 +8,7 @@ public record GetToursQuery : IRequest<Result<PaginatedList<TourDto>>>
     public bool OnlyPublished { get; private set; } = true;
     public int PageNumber { get; init; } = 1;
     public int PageSize { get; init; } = 10;
-    public string? SearchTerm { get; init; }
+    public string? Search { get; init; }
     public DateTime? StartDate { get; init; }
     public DateTime? EndDate { get; init; }
     public decimal? MinPrice { get; init; }
@@ -46,10 +46,10 @@ public class GetToursQueryHandler : IRequestHandler<GetToursQuery, Result<Pagina
             query = query.Where(t => t.PublishedAt != null);
         }
 
-        if (!string.IsNullOrEmpty(request.SearchTerm))
+        if (!string.IsNullOrEmpty(request.Search))
         {
-            query = query.Where(t => t.Title.Contains(request.SearchTerm) || 
-                                   t.Description.Contains(request.SearchTerm));
+            query = query.Where(t => t.Title.Contains(request.Search) || 
+                                   t.Description.Contains(request.Search));
         }
         if (request.CityId.HasValue)
         {

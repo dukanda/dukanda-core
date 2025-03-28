@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 
 public record CreateTourCommand : IRequest<Result<TourDto>>
 {
-    public Guid AgencyId { get; init; }
     public string Title { get; init; } = null!;
     public string Description { get; init; } = null!;
     public decimal BasePrice { get; init; }
@@ -21,15 +20,24 @@ public class CreateTourCommandHandler : IRequestHandler<CreateTourCommand, Resul
 {
     private readonly IApplicationDbContext _context;
     private readonly ICloudinaryService _cloudinaryService;
-
-    public CreateTourCommandHandler(IApplicationDbContext context, ICloudinaryService cloudinaryService)
+   private readonly IUser _currentUser;
+    public CreateTourCommandHandler(IApplicationDbContext context, 
+        ICloudinaryService cloudinaryService,
+        IUser currentUser)
     {
         _context = context;
         _cloudinaryService = cloudinaryService;
+        _currentUser = currentUser;
     }
 
     public async Task<Result<TourDto>> Handle(CreateTourCommand request, CancellationToken cancellationToken)
     {
+
+        if (_currentUser.Id == null)
+        {
+            return Result.Failure<TourDto>("You are not logged in!");
+        }
+        
         // Upload cover image
         string coverUrl;
         using (var stream = request.Cover.OpenReadStream())
@@ -43,7 +51,7 @@ public class CreateTourCommandHandler : IRequestHandler<CreateTourCommand, Resul
 
         var tour = new Tour
         {
-            AgencyId = request.AgencyId,
+            AgencyId = _currentUser.Id.Value,
             Title = request.Title,
             Description = request.Description,
             BasePrice = request.BasePrice,

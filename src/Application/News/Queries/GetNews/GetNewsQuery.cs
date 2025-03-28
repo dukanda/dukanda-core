@@ -6,7 +6,7 @@ namespace DukandaCore.Application.News.Queries.GetNews;
 
 public record GetNewsQuery : IRequest<Result<List<NewsDto>>>
 {
-    public string? SearchTerm { get; init; }
+    public string? Search { get; init; }
     public string? Tag { get; init; }
     internal bool IncludeUnpublished { get;  set; }
 
@@ -34,9 +34,9 @@ public class GetNewsQueryHandler : IRequestHandler<GetNewsQuery, Result<List<New
         if (!request.IncludeUnpublished)
             query = query.Where(n => n.PublishedAt.HasValue);
 
-        if (!string.IsNullOrEmpty(request.SearchTerm))
-            query = query.Where(n => n.Title.Contains(request.SearchTerm) || 
-                                   n.Description.Contains(request.SearchTerm));
+        if (!string.IsNullOrEmpty(request.Search))
+            query = query.Where(n => n.Title.Contains(request.Search) || 
+                                   n.Description.Contains(request.Search));
 
         if (!string.IsNullOrEmpty(request.Tag))
             query = query.Where(n => n.Tags != null && n.Tags.Contains(request.Tag));

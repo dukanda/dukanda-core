@@ -6,12 +6,12 @@ using DukandaCore.Domain.Entities;
 
 namespace DukandaCore.Application.Tours.Commands.AddPackage;
 
-public record AddPackageCommand : IRequest<Result<PackageDto>>
+public class AddPackageCommand : IRequest<Result<PackageDto>>
 {
-    public Guid TourId { get; init; }
-    public string Name { get; init; } = string.Empty;
-    public decimal Price { get; init; }
-    public List<BenefitCreateDto> Benefits { get; init; } = new();
+    public Guid TourId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public decimal Price { get; set; }
+    public required List<BenefitCreateDto> Benefits { get; set; }
 }
 
 public class AddPackageCommandHandler : IRequestHandler<AddPackageCommand, Result<PackageDto>>
