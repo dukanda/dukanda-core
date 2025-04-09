@@ -19,15 +19,19 @@ public class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand, Resul
     private readonly IApplicationDbContext _context;
     private readonly ICloudinaryService _cloudinaryService;
     private readonly IMapper _mapper;
+    private readonly IUser _user;
 
     public CreateNewsCommandHandler(
         IApplicationDbContext context,
         ICloudinaryService cloudinaryService,
-        IMapper mapper)
+        IMapper mapper,
+        IUser user)
     {
         _context = context;
         _cloudinaryService = cloudinaryService;
         _mapper = mapper;
+        _user = user;
+        
     }
 
     public async Task<Result<NewsDto>> Handle(CreateNewsCommand request, CancellationToken cancellationToken)
@@ -41,7 +45,10 @@ public class CreateNewsCommandHandler : IRequestHandler<CreateNewsCommand, Resul
             Description = request.Description,
             Content = request.Content,
             CoverImageUrl = imageUrl,
-            Tags = request.Tags
+            Tags = request.Tags,
+            PublishedAt = DateTime.Now,
+            PublishedById = _user?.Id,
+            
         };
 
         _context.News.Add(news);

@@ -74,6 +74,7 @@ public class NewsController : BaseController
     [HttpGet]
     public async Task<ActionResult> GetNews([FromQuery] GetNewsQuery query)
     {
+        query.IncludeUnpublishedNews();
         var result = await _sender.Send(query);
         if (!result.IsSuccess)
             return BadRequest(result.Error);
