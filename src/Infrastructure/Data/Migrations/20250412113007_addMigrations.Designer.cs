@@ -3,6 +3,7 @@ using System;
 using DukandaCore.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DukandaCore.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250412113007_addMigrations")]
+    partial class addMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -145,7 +148,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BannerTypes");
+                    b.ToTable("BannerType");
 
                     b.HasData(
                         new
@@ -1476,19 +1479,19 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("12df24c0-ab53-4907-b761-5f5349897ca6"),
+                            Id = new Guid("4810f588-ba1d-4a41-9c98-dc860444e24c"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("003afa0a-b7fd-45fe-a78a-b39599586b0b"),
+                            Id = new Guid("2792df5f-b796-4187-8ffa-53aace46e68d"),
                             Name = "TourAgency",
                             NormalizedName = "TOUR_AGENCY"
                         },
                         new
                         {
-                            Id = new Guid("58a13939-4b99-4752-a750-51b4e69437dd"),
+                            Id = new Guid("eff1933a-bddf-46b1-aca6-f57b478b5a07"),
                             Name = "Tourist",
                             NormalizedName = "TOURIST"
                         });

@@ -31,19 +31,20 @@ public class ApplicationDbContextInitialiser
     }
     public async Task InitialiseAsync()
     {
-       
-        
         var touristAttractionSeeder = new TouristAttractionSeeder(_context);
         var tourAgencySeeder = new TourAgencySeeder(_context);
         var tourSeeder = new TourSeeder(_context);
+        var bannerTypeSeeder = new BannerTypeSeeder(_context);
+        var bannerSeeder = new BannerSeeder(_context);
         
         await SeedDefaultUserAsync();
         await tourAgencySeeder.SeedTourAgenciesAsync();   
         await touristAttractionSeeder.SeedTouristAttractionsAsync();
-        await _context.Database.MigrateAsync();
-        
-       
+      
+        await bannerTypeSeeder.SeedBannerTypesAsync();
+        await bannerSeeder.SeedBannersAsync();
         await tourSeeder.SeedToursAsync();
+        await _context.Database.MigrateAsync();
     }
 
     private async Task SeedDefaultUserAsync()

@@ -23,6 +23,8 @@ public interface IApplicationDbContext
     DbSet<Booking> Bookings { get; }
     DbSet<Domain.Entities.News> News { get; }
     DbSet<NewsGallery> NewsGalleries { get; }
+    DbSet<Banner> Banners { get; }
+    DbSet<BannerType> BannerTypes { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken);
 }
