@@ -117,7 +117,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
                     b.HasIndex("BannerTypeId");
 
-                    b.ToTable("Banner");
+                    b.ToTable("Banners");
                 });
 
             modelBuilder.Entity("DukandaCore.Domain.Entities.BannerType", b =>
@@ -145,7 +145,7 @@ namespace DukandaCore.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("BannerType");
+                    b.ToTable("BannerTypes");
 
                     b.HasData(
                         new
@@ -1476,19 +1476,19 @@ namespace DukandaCore.Infrastructure.Data.Migrations
                     b.HasData(
                         new
                         {
-                            Id = new Guid("13bbd941-6da6-4173-9777-18847f7c8cc2"),
+                            Id = new Guid("12df24c0-ab53-4907-b761-5f5349897ca6"),
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = new Guid("0df81c57-6bc4-4863-b327-48dac0d91dae"),
+                            Id = new Guid("003afa0a-b7fd-45fe-a78a-b39599586b0b"),
                             Name = "TourAgency",
                             NormalizedName = "TOUR_AGENCY"
                         },
                         new
                         {
-                            Id = new Guid("2fc86872-cd18-4051-86ab-a123df302995"),
+                            Id = new Guid("58a13939-4b99-4752-a750-51b4e69437dd"),
                             Name = "Tourist",
                             NormalizedName = "TOURIST"
                         });

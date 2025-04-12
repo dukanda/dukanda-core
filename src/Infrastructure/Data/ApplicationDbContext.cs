@@ -27,6 +27,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Benefit> Benefits => Set<Benefit>();
     public DbSet<Booking> Bookings => Set<Booking>();
     public DbSet<News> News => Set<News>();
+    public DbSet<Banner> Banners => Set<Banner>();
+    public DbSet<BannerType> BannerTypes => Set<BannerType>();
     public DbSet<NewsGallery> NewsGalleries => Set<NewsGallery>();
 
     protected override void OnModelCreating(ModelBuilder builder)
